@@ -469,6 +469,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4;}
   <!-- 참깨 케어 -->
   <div class="panel" id="panel-care">
     <div class="panel-inner">
+      <button id="migrate-btn" onclick="migrateData()" style="font-family:var(--font);font-size:13px;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--bg2);color:var(--text-sub);cursor:pointer;margin-bottom:1rem;">이전 데이터 복구</button>
       <div class="sec-title">케어 주기</div>
       <div class="care-items" id="care-items"></div>
       <div class="sec-title" style="margin-top:.25rem;">소모품</div>
@@ -905,9 +906,27 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch",e=>e.respondWith(fetch(e.request)))').catch(()=>{});
 }
 
+/* ── 데이터 마이그레이션 ── */
+function migrateData(){
+  const old=localStorage.getItem('chamkae_care_v2');
+  if(old&&!localStorage.getItem('chamkae_care_v3')){
+    localStorage.setItem('chamkae_care_v3',old);
+    renderCare();
+    document.getElementById('migrate-btn').textContent='✓ 복구 완료!';
+    setTimeout(()=>document.getElementById('migrate-btn').style.display='none',2000);
+  } else {
+    document.getElementById('migrate-btn').textContent='복구할 데이터 없음';
+    setTimeout(()=>document.getElementById('migrate-btn').style.display='none',2000);
+  }
+}
+
 /* ── 초기화 ── */
 updateClock();
 loadWeather();
+// 이전 데이터 없으면 마이그레이션 버튼 숨김
+if(!localStorage.getItem('chamkae_care_v2')||localStorage.getItem('chamkae_care_v3')){
+  const mb=document.getElementById('migrate-btn');if(mb)mb.style.display='none';
+}
 renderCal();
 renderSchedList();
 renderTodo();
