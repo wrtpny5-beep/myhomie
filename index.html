@@ -371,6 +371,14 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4;}
     </div>
   </div>
 
+  <!-- API 키 -->
+  <div style="margin:8px 1.25rem 0;">
+    <div class="api-key-row">
+      <input class="api-key-inp" id="api-key-inp" type="password" placeholder="Gemini API 키 (메뉴 추천에 필요)">
+      <button class="api-key-save" onclick="saveApiKey()">저장</button>
+    </div>
+  </div>
+
   <!-- 할 일 -->
   <div class="panel" id="panel-todo">
     <div class="panel-inner">
@@ -390,12 +398,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4;}
 
   <!-- 음악 -->
   <div class="panel" id="panel-music">
-    <div class="panel-inner">
-      <div class="api-key-row">
-        <input class="api-key-inp" id="api-key-inp" type="password" placeholder="Claude API 키 입력 (메뉴 추천에 필요)">
-        <button class="api-key-save" onclick="saveApiKey()">저장</button>
-      </div>
-    </div>
     <div class="music-grid">
       <button class="mood-btn" onclick="openMusic('lofi chill evening')"><span class="mood-icon">🌙</span><span class="mood-name">릴렉스</span><span class="mood-sub">lofi · chill</span></button>
       <button class="mood-btn" onclick="openMusic('cooking background music upbeat')"><span class="mood-icon">🍳</span><span class="mood-name">요리 중</span><span class="mood-sub">경쾌한 팝</span></button>
@@ -814,11 +816,17 @@ async function suggestMeal(){
   const names=sel.map(x=>x.name).join(', ');
   const apiKey=getApiKey();
   const result=document.getElementById('fridge-result');
-  if(!apiKey){result.textContent='API 키가 필요해요. 음악 패널에서 Claude API 키를 먼저 저장해주세요.';return;}
+  if(!apiKey){result.textContent='API 키가 필요해요. 아래 Gemini API 키를 먼저 저장해주세요.';return;}
   result.className='fridge-result loading';result.textContent='메뉴 생각하는 중…';
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:`냉장고에 ${names} 이/가 있어. 이 재료들로 만들 수 있는 저녁 메뉴 2~3가지를 추천해줘. 메뉴 이름과 한 줄 설명만 간단히. 한국어로.`}]})});
-    const d=await res.json();const txt=d.content&&d.content[0]&&d.content[0].text;
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:`냉장고에 ${names} 이/가 있어. 이 재료들로 만들 수 있는 저녁 메뉴 2~3가지를 추천해줘. 메뉴 이름과 한 줄 설명만 간단히. 한국어로.`}]}]})
+    });
+    if(!res.ok){const err=await res.json();result.className='fridge-result';result.textContent='오류: '+(err.error&&err.error.message||res.status);return;}
+    const d=await res.json();
+    const txt=d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0].text;
     result.className='fridge-result';result.textContent=txt||'응답을 받지 못했어요.';
   }catch(e){result.className='fridge-result';result.textContent='연결 오류: '+e.message;}
 }
