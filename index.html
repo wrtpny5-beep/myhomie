@@ -681,9 +681,9 @@ function saveGrapes(g){localStorage.setItem(GRAPE_KEY,JSON.stringify(g));}
 
 function addGrape(n){
   const g=getGrapes();
-  const prev=Math.floor(g.total/30);
+  const prev=Math.floor(g.total/10);
   g.total+=n;
-  const now=Math.floor(g.total/30);
+  const now=Math.floor(g.total/10);
   saveGrapes(g);
   if(now>prev){setTimeout(()=>showGrapeReward(),300);}
 }
@@ -730,7 +730,7 @@ function renderGrapeBoard(){
 
   board.innerHTML=`
     <div class="grape-header"><span class="grape-title">🍇 리아의 포도알</span><span class="grape-count">${filled30}/30일 · ${completed}송이</span></div>
-    <div class="grape-goal">30일 채울 때마다 <b>먹고 싶은 거 1개</b> 사주기! 🎁</div>
+    <div class="grape-goal">10일 채울 때마다 <b>먹고 싶은 거 1개</b> 사주기! 🎁</div>
     <svg width="100%" viewBox="0 0 320 480" xmlns="http://www.w3.org/2000/svg" style="display:block;max-width:300px;margin:0 auto;">
       <g transform="translate(160,240) rotate(20) translate(-160,-240)">
         <path d="M160,18 C160,32 157,48 159,68 C160,80 160,88 160,92" stroke="#8B6914" stroke-width="4" stroke-linecap="round" fill="none"/>
