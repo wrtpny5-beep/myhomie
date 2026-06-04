@@ -277,6 +277,9 @@ body{font-family:var(--font);background:var(--green);color:var(--text);display:f
 .workout-cal-item.done{color:var(--text);}
 .workout-cal-item.done::before{content:'✓ ';color:#7B4FA6;font-weight:700;}
 .workout-cal-cardio{font-size:12px;color:#7B4FA6;margin-top:6px;font-weight:700;}
+.workout-mark-btn{width:100%;font-family:var(--font);font-size:13px;padding:7px 0;border-radius:var(--r-sm);border:none;background:#7B4FA6;color:#fff;cursor:pointer;margin-top:4px;transition:opacity .15s;}
+.workout-mark-btn:active{opacity:.8;}
+.workout-mark-btn.cancel{background:var(--bg2);color:var(--text-sub);}
 
 /* 운동 카드 */
 .exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent;}
@@ -1264,18 +1267,54 @@ function renderWorkoutCalDetail(dateStr){
   const d=new Date(dateStr+'T00:00:00');
   const KD=['일','월','화','수','목','금','토'];
   const label=`${d.getMonth()+1}/${d.getDate()}(${KD[d.getDay()]})`;
-  if(!log[dateStr]){
-    detail.innerHTML=`<div class="workout-cal-date-label">${label}</div><div class="workout-cal-empty">기록 없음</div>`;return;
-  }
-  const rec=log[dateStr];
-  let html=`<div class="workout-cal-date-label">${label} · ${rec.theme.replace(/[^ ]+ /,'')}</div>`;
-  rec.exercises.forEach(ex=>{
-    html+=`<div class="workout-cal-item${ex.done?' done':''}">${ex.name}<br><span style="font-size:11px;color:var(--text-hint)">${ex.reps}</span></div>`;
-  });
-  if(rec.cardio){
-    html+=`<div class="workout-cal-cardio">${rec.cardio.done?'✓':'○'} 유산소 ${rec.cardio.done?'완료':'미완료'}</div>`;
+  const hasLog=!!log[dateStr];
+
+  let html=`<div class="workout-cal-date-label">${label}</div>`;
+
+  if(!hasLog){
+    html+=`<div class="workout-cal-empty" style="padding:.75rem 0;">기록 없음</div>
+    <button class="workout-mark-btn" onclick="markWorkoutDate('${dateStr}')">✓ 완료로 표시</button>`;
+  } else {
+    const rec=log[dateStr];
+    html+=`<div style="margin-bottom:6px;font-size:12px;color:#7B4FA6;font-weight:700;">${rec.theme||'운동 완료'}</div>`;
+    (rec.exercises||[]).forEach(ex=>{
+      html+=`<div class="workout-cal-item${ex.done?' done':''}">${ex.name}<br><span style="font-size:11px;color:var(--text-hint)">${ex.reps}</span></div>`;
+    });
+    if(rec.cardio){
+      html+=`<div class="workout-cal-cardio">${rec.cardio.done?'✓':'○'} 유산소 ${rec.cardio.done?'완료':'미완료'}</div>`;
+    }
+    html+=`<button class="workout-mark-btn cancel" style="margin-top:8px;" onclick="unmarkWorkoutDate('${dateStr}')">✕ 완료 취소</button>`;
   }
   detail.innerHTML=html;
+}
+
+function markWorkoutDate(dateStr){
+  const log=getWorkoutLog();
+  const d=new Date(dateStr+'T00:00:00');
+  const dayName=DAYS[d.getDay()];
+  const wd=WORKOUT_DATA[dayName]||WORKOUT_DATA['일'];
+  log[dateStr]={
+    theme:wd.theme,
+    exercises:wd.exercises.map(ex=>({name:ex.name,reps:ex.reps,done:true})),
+    cardio:{name:wd.cardio,done:true},
+    manual:true,
+  };
+  saveWorkoutLog(log);
+  addGrape(1);
+  renderWorkoutCal();
+  renderWorkoutCalDetail(dateStr);
+  renderGrapeBoard();
+}
+
+function unmarkWorkoutDate(dateStr){
+  const log=getWorkoutLog();
+  const wasManual=log[dateStr]&&log[dateStr].manual;
+  delete log[dateStr];
+  saveWorkoutLog(log);
+  if(wasManual)removeGrape(1);
+  renderWorkoutCal();
+  renderWorkoutCalDetail(dateStr);
+  renderGrapeBoard();
 }
 updateClock();
 loadWeather();
