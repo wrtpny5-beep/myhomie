@@ -14,15 +14,15 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#F8F4EC;--bg2:#EEE9DC;
-  --surface:#FDFBF5;--surface2:#F4EFE3;
-  --border:#DDD7C8;--border2:#C8C0AE;
-  --green:#003631;--yellow:#FFEDA8;
-  --text:#1A1F1E;--text-sub:#4A5754;--text-hint:#9EAAA8;
-  --high:#B83232;--mid:#A07020;--low:#003631;
+  --bg:#F5F2E8;--bg2:#E8E4D0;
+  --surface:#FDFCF7;--surface2:#EAD465;
+  --border:#DDD8C4;--border2:#C8C2A8;
+  --green:#0A3B08;--yellow:#FFEDA8;--accent:#EAC800;
+  --text:#1A1E0A;--text-sub:#4A5220;--text-hint:#8A9060;
+  --high:#B83232;--mid:#7E8407;--low:#254E06;
   --r:14px;--r-sm:9px;
   --font:'Gowun Dodum',sans-serif;
-  --shadow:0 2px 14px rgba(0,54,49,0.09);
+  --shadow:0 2px 14px rgba(37,78,6,0.09);
   --tab-h:60px;
   --top-h:0px;
 }
@@ -55,7 +55,7 @@ body{font-family:var(--font);background:var(--green);color:var(--text);display:f
 /* 음악 무드 버튼 */
 .music-row{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;}
 .mood-chip{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;border:1px solid rgba(255,237,168,.25);background:rgba(255,237,168,.08);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;}
-.mood-chip:active{background:rgba(255,237,168,.2);}
+.mood-chip:active{background:rgba(255,237,168,.18);}
 .mood-chip-icon{font-size:14px;}
 .mood-chip-label{font-size:13px;color:var(--yellow);opacity:.8;}
 
@@ -214,7 +214,7 @@ body{font-family:var(--font);background:var(--green);color:var(--text);display:f
 .workout-day-sub{font-size:14px;color:var(--yellow);opacity:.6;}
 .workout-progress-wrap{margin-top:10px;}
 .workout-prog-label{display:flex;justify-content:space-between;font-size:13px;color:var(--yellow);opacity:.7;margin-bottom:5px;}
-.workout-prog-track{height:6px;background:rgba(255,237,168,.2);border-radius:99px;overflow:hidden;}
+.workout-prog-track{height:6px;background:rgba(255,237,168,.18);border-radius:99px;overflow:hidden;}
 .workout-prog-fill{height:100%;background:var(--yellow);border-radius:99px;transition:width .4s cubic-bezier(.4,0,.2,1);}
 
 /* 포도알 스티커 */
