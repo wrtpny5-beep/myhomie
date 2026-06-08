@@ -912,7 +912,10 @@ function renderHome(){
         <div style="font-size:13px;color:var(--text-hint);">${s.time?s.time+' · ':''}${whoLabel}</div>
       </div>
     </div>`;
-  }).join('');const s=getWorkoutState();
+  }).join('');
+
+  // 운동
+  const wd=getTodayWorkoutData();const s=getWorkoutState();
   const hwp=document.getElementById('home-workout-preview');
   const remaining=wd.exercises.filter((_,i)=>!s.done.includes(i));
   hwp.innerHTML=`<div class="home-workout-theme">${wd.theme}</div><div class="home-workout-list">${
