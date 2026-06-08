@@ -1300,7 +1300,8 @@ function markWorkoutDate(dateStr){
     manual:true,
   };
   saveWorkoutLog(log);
-  addGrape(1);
+  // 오늘은 이미 운동 완료 시 포도알이 찍히므로 중복 방지
+  if(dateStr!==todayStr())addGrape(1);
   renderWorkoutCal();
   renderWorkoutCalDetail(dateStr);
   renderGrapeBoard();
@@ -1311,7 +1312,7 @@ function unmarkWorkoutDate(dateStr){
   const wasManual=log[dateStr]&&log[dateStr].manual;
   delete log[dateStr];
   saveWorkoutLog(log);
-  if(wasManual)removeGrape(1);
+  if(wasManual&&dateStr!==todayStr())removeGrape(1);
   renderWorkoutCal();
   renderWorkoutCalDetail(dateStr);
   renderGrapeBoard();
