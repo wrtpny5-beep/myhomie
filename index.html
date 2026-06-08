@@ -470,6 +470,10 @@ button{font-family:var(--font);}
         <div class="card card-pad" id="home-todo-list"></div>
       </div>
       <div class="home-section">
+        <div class="home-sec-label">오늘 일정</div>
+        <div class="card card-pad" id="home-sched-list"></div>
+      </div>
+      <div class="home-section">
         <div class="home-sec-label">오늘 운동</div>
         <div class="card card-pad" id="home-workout-preview"></div>
       </div>
@@ -894,8 +898,21 @@ function renderHome(){
   if(!todayTodos.length){htl.innerHTML='<div class="home-empty">오늘 할 일이 없어요 ✨</div>';}
   else htl.innerHTML=todayTodos.map(t=>`<div class="home-todo-item"><div class="home-todo-dot"></div><div class="home-todo-text">${t.text}</div></div>`).join('');
 
-  // 운동
-  const wd=getTodayWorkoutData();const s=getWorkoutState();
+  // 일정
+  const todayScheds=[...sload().filter(s=>schedIncludesDate(s,todayStr())),...getCareEventsForDate(todayStr()).map(x=>({...x,who:'care'}))].sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const hsl=document.getElementById('home-sched-list');
+  if(!todayScheds.length){hsl.innerHTML='<div class="home-empty">오늘 일정이 없어요 📅</div>';}
+  else hsl.innerHTML=todayScheds.map(s=>{
+    const whoColor=s.who==='me'?'#6BAF6B':s.who==='partner'?'#E8C84A':s.who==='both'?'#8888CC':'#9EAAA8';
+    const whoLabel=s.who==='me'?'은호':s.who==='partner'?'리아':s.who==='both'?'공동':'🐱 참깨';
+    return `<div class="home-todo-item">
+      <div style="width:7px;height:7px;border-radius:50%;background:${whoColor};flex-shrink:0;margin-top:4px;"></div>
+      <div>
+        <div class="home-todo-text">${s.title||s.name||''}</div>
+        <div style="font-size:13px;color:var(--text-hint);">${s.time?s.time+' · ':''}${whoLabel}</div>
+      </div>
+    </div>`;
+  }).join('');const s=getWorkoutState();
   const hwp=document.getElementById('home-workout-preview');
   const remaining=wd.exercises.filter((_,i)=>!s.done.includes(i));
   hwp.innerHTML=`<div class="home-workout-theme">${wd.theme}</div><div class="home-workout-list">${
