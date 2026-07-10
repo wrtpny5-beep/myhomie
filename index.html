@@ -420,6 +420,15 @@ body{font-family:var(--font);background:var(--green);color:var(--text);display:f
 .memo-sheet-title{font-size:17px;font-weight:700;color:var(--text);}
 .memo-close-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);font-size:14px;color:var(--text-hint);cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
+.notice-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;}
+.notice-overlay.show{display:block;}
+.notice-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);background:var(--surface);border-radius:var(--r);box-shadow:0 8px 40px rgba(0,0,0,.2);z-index:301;width:calc(100% - 48px);max-width:400px;padding:1.5rem 1.5rem 1.25rem;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;}
+.notice-modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+.notice-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--green);background:var(--yellow);padding:3px 10px;border-radius:99px;margin-bottom:.75rem;}
+.notice-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:.6rem;line-height:1.4;}
+.notice-body{font-size:15px;color:var(--text-sub);line-height:1.75;margin-bottom:1.1rem;white-space:pre-wrap;}
+.notice-close{width:100%;font-family:var(--font);font-size:15px;padding:10px;border-radius:var(--r-sm);border:none;background:var(--green);color:var(--yellow);cursor:pointer;font-weight:700;}
+
 button{font-family:var(--font);}
 </style>
 </head>
@@ -607,6 +616,15 @@ button{font-family:var(--font);}
       <div class="supply-grid" id="supply-grid"></div>
     </div>
   </div>
+</div>
+
+<!-- 공지 팝업 -->
+<div class="notice-overlay" id="notice-overlay" onclick="closeNotice()"></div>
+<div class="notice-modal" id="notice-modal">
+  <div class="notice-badge">공지</div>
+  <div class="notice-title" id="notice-title"></div>
+  <div class="notice-body" id="notice-body"></div>
+  <button class="notice-close" onclick="closeNotice()">확인했어요</button>
 </div>
 
 <!-- 메모 모달 -->
@@ -1337,6 +1355,28 @@ function unmarkWorkoutDate(dateStr){
   renderWorkoutCalDetail(dateStr);
   renderGrapeBoard();
 }
+
+/* ── 공지 팝업 ── */
+// 새 공지 올릴 때: NOTICE_ID 숫자 올리고 title/body 수정
+const NOTICE_ID='notice_001';
+const NOTICE_TITLE='포도알 시스템 변경 공지';
+const NOTICE_BODY=`이제부턴 포도알 10개 모을 때마다 복권 1장씩!
+달라진 시스템으로 더 짜릿한 운동효과를 느껴보세요!
+어떤 보상이 기다리고 있을까 🍀`;
+
+function initNotice(){
+  if(localStorage.getItem(NOTICE_ID))return;
+  document.getElementById('notice-title').textContent=NOTICE_TITLE;
+  document.getElementById('notice-body').textContent=NOTICE_BODY;
+  document.getElementById('notice-overlay').classList.add('show');
+  document.getElementById('notice-modal').classList.add('show');
+}
+function closeNotice(){
+  localStorage.setItem(NOTICE_ID,'seen');
+  document.getElementById('notice-overlay').classList.remove('show');
+  document.getElementById('notice-modal').classList.remove('show');
+}
+
 updateClock();
 loadWeather();
 renderTodo();
@@ -1354,6 +1394,7 @@ if(getApiKey())document.getElementById('api-key-inp').placeholder='API 키 저�
 
 /* 이전 데이터 마이그레이션 */
 (()=>{const old=localStorage.getItem('chamkae_care_v2');if(old&&!localStorage.getItem('chamkae_care_v3')){localStorage.setItem('chamkae_care_v3',old);}})();
+setTimeout(initNotice,500);
 </script>
 </body>
 </html>
